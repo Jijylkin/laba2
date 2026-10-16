@@ -1,0 +1,134 @@
+### Создать пользователя 1 (201)
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{ "name": "Хоумлендеров Олег", "email": "patriot@mail.ru" }
+
+### Создать пользователя 2 (201)
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{ "name": "Козлов Алексей", "email": "kozel@mail.ru" }
+
+### Создать пользователя 3 (201)
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{ "name": "Титамир Богдан", "email": "titan@mail.ru" }
+
+### Все пользователи (200)
+GET http://localhost:8080/api/users
+
+### Создать команду 1 (201) - капитан сам попадает в состав
+POST http://localhost:8080/api/teams
+Content-Type: application/json
+
+{ "name": "Орлы", "captainId": 1, "memberIds": [2] }
+
+### Создать команду 2 (201)
+POST http://localhost:8080/api/teams
+Content-Type: application/json
+
+{ "name": "Волки", "captainId": 3 }
+
+### Создать турнир (201) - статус всегда REGISTRATION
+POST http://localhost:8080/api/tournaments
+Content-Type: application/json
+
+{ "name": "Кубок группы", "teamLimit": 4 }
+
+### Заявка команды 1 (201) - статус PENDING, время подачи ставит сервер
+POST http://localhost:8080/api/team-applications
+Content-Type: application/json
+
+{ "teamId": 1, "tournamentId": 1 }
+
+### Заявка команды 2 (201)
+POST http://localhost:8080/api/team-applications
+Content-Type: application/json
+
+{ "teamId": 2, "tournamentId": 1 }
+
+### Повторная заявка (409)
+POST http://localhost:8080/api/team-applications
+Content-Type: application/json
+
+{ "teamId": 1, "tournamentId": 1 }
+
+### Старт турнира без допущенных команд (409)
+PATCH http://localhost:8080/api/tournaments/1
+Content-Type: application/json
+
+{ "status": "IN_PROGRESS" }
+
+### Допустить команду 1 (200)
+PATCH http://localhost:8080/api/team-applications/1
+Content-Type: application/json
+
+{ "status": "APPROVED" }
+
+### Допустить команду 2 (200)
+PATCH http://localhost:8080/api/team-applications/2
+Content-Type: application/json
+
+{ "status": "APPROVED" }
+
+### Старт турнира (200)
+PATCH http://localhost:8080/api/tournaments/1
+Content-Type: application/json
+
+{ "status": "IN_PROGRESS" }
+
+### Матч команды с самой собой (400)
+POST http://localhost:8080/api/matches
+Content-Type: application/json
+
+{ "tournamentId": 1, "team1Id": 1, "team2Id": 1 }
+
+### Создать матч (201) - счёт 0:0, статус SCHEDULED
+POST http://localhost:8080/api/matches
+Content-Type: application/json
+
+{ "tournamentId": 1, "team1Id": 1, "team2Id": 2 }
+
+### Записать результат матча (200)
+PATCH http://localhost:8080/api/matches/1
+Content-Type: application/json
+
+{ "score1": 3, "score2": 1, "status": "FINISHED" }
+
+### Менять завершённый матч (409)
+PATCH http://localhost:8080/api/matches/1
+Content-Type: application/json
+
+{ "score1": 5 }
+
+### Обновить команду (200)
+PATCH http://localhost:8080/api/teams/2
+Content-Type: application/json
+
+{ "name": "Серые волки" }
+
+### Все матчи (200)
+GET http://localhost:8080/api/matches
+
+### Удалить игрока Петрова (204) - он пропадёт из состава команды 1
+DELETE http://localhost:8080/api/users/2
+
+### Команда 1 (200) - в составе остался только капитан
+GET http://localhost:8080/api/teams/1
+
+### Удалить капитана Иванова (204) - удалятся его команда, её заявка и матчи
+DELETE http://localhost:8080/api/users/1
+
+### Матчей не осталось (200, [])
+GET http://localhost:8080/api/matches
+
+### Удалить турнир (204) - удалятся оставшиеся заявки
+DELETE http://localhost:8080/api/tournaments/1
+
+### Заявок не осталось (200, [])
+GET http://localhost:8080/api/team-applications
+
+### Несуществующий турнир (404)
+GET http://localhost:8080/api/tournaments/1
